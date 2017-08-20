@@ -74,10 +74,11 @@
 		console.log("column index:");
 		console.log(columnIndex);
 
-		if(checkColumnAvailability(columnIndex, wordLen, puzzle)) {
+		if(checkColumnAvailability(columnIndex, word, puzzle)) {
 			for (var i = 0; i < wordLen; i++, rowIndex++) {
 				puzzle[rowIndex][columnIndex] = word[i];
 			}
+			scanAvailableColumns(columnIndex, wordLen, puzzle);
 		}
 		else {
 			console.log("OOOPs!");
@@ -86,63 +87,106 @@
 		
 	};
 
-	var fillHorizontally = function (rowIndex,puzzle, word) {
+	var fillHorizontally = function (rowIndex, puzzle, word) {
 		var wordLen = word.length;
 		var columnIndex = Math.floor(Math.random() * (10 - wordLen + 1));
 
-		if (checkRowAvailability(columnIndex, wordLen, puzzle)){
-			for (var i = 0; i < len; i++, columnIndex++) {
+		if (checkRowAvailability(columnIndex, word, puzzle)) {
+			for (var i = 0; i < wordLen; i++, columnIndex++) {
 				puzzle[rowIndex][columnIndex] = word[i];
 			}
+			scanAvailableRows(rowIndex, wordLen, puzzle);
 		}
 		else {
+			console.log("OOPS HORIZONTAL!");
 			placeWordInPuzzle(puzzle,word);
 		}
 	};
 
-	var checkColumnAvailability = function (position, wordLen, puzzle) {
-		var numberOfAdjacentFreeCells = findNumberOfAdjacentFreeCellsInColumn(position, wordLen, puzzle);
-		if (numberOfAdjacentFreeCells < minWordLength) {
-			availableColumns.splice(availableColumns.indexOf(position), 1);
-			return false;
-		}
-		if (numberOfAdjacentFreeCells < wordLen) {
+	var checkColumnAvailability = function (position, word, puzzle) {
+		var wordLen = word.length;
+		var numberOfAvailableCells = findNumberOfAvailableCellsInColumn(position, word, puzzle);
+		
+		if (numberOfAvailableCells < wordLen) {
 			return false;
 		}
 		return true;
 	};
 
-	var checkRowAvailability = function (position, minWordLength) {
+	var checkRowAvailability = function (position, word, puzzle) {
+		var wordLen = word.length;
+		var numberOfAvailableCells = findnumberOfAvailableCellsInRow(position, word, puzzle);
 		
-		
+		if (numberOfAvailableCells < wordLen) {
+			return false;
+		}
+		return true;
 	};
 
-	var findNumberOfAdjacentFreeCellsInColumn = function (position, wordLen, puzzle) {
-		var adjacentFreeCells = 0;
+	var scanAvailableColumns = function (position, wordLen, puzzle) {
+		var numberOfAvailableCells = findNumberOfAvailableCellsInColumn(position, minWordLength, puzzle);
+		if (numberOfAvailableCells < minWordLength) {
+			availableColumns.splice(availableColumns.indexOf(position), 1);
+		}
+	};
 
-		for (var i = 0; i < 10; i++) {
-			if (adjacentFreeCells >= wordLen) {
-				break;
+	var scanAvailableRows = function (position, wordLen, puzzle) {
+		var numberOfAvailableCells = findnumberOfAvailableCellsInRow(position, minWordLength, puzzle);
+		if (numberOfAvailableCells < minWordLength) {
+			availableRows.splice(availableRows.indexOf(position), 1);
+		}
+	};
+	
+
+	var findNumberOfAvailableCellsInColumn = function (position, word, puzzle) {
+		var availableCells = [0,0];
+		var wordLen = word.length;
+		console.log("word is: " + word);
+
+		for (var i = 0; i < PUZZLE_HEIGHT; i++) {
+			if (puzzle[i][position] == ' ') {
+				availableCells[0]++;
 			}
-			else if (puzzle[i][position] == ' ') {
-				adjacentFreeCells++;
+			else if (availableCells[1] < availableCells[0]) {
+				availableCells[1] = availableCells[0];
+				availableCells[0] = 0;
 			}
-			else{
-				adjacentFreeCells = 0;
+			else {
+				availableCells[0] = 0;
+			}
+			//console.log(puzzle[i][position] + " == " + word[availableCells] + "?");
+		}
+		console.log("adjacent Free Cells in column: " + position + " is " + availableCells);
+
+		return Math.max.apply(null, availableCells);
+	};
+
+	var findnumberOfAvailableCellsInRow = function (position, word, puzzle) {
+		var availableCells = 0;
+		var wordLen = word.length;
+
+		for (var i = 0; i < PUZZLE_WIDTH; i++) {
+			if (availableCells >= wordLen) {
+				availableCells++;
+			}
+			else if (puzzle[position][i] == ' ' || puzzle[i][position] == word[availableCells]) {
+				availableCells++;
+			}
+			else {
+				availableCells = 0;
 			}
 		}
-		console.log("adjacent Free Cells in column: " + position + " is " + adjacentFreeCells);
+		console.log("adjacent Free Cells in column: " + position + " is " + availableCells + " i: " + i);
 
-		return adjacentFreeCells;
-	};
-
-	var findNumberOfAdjacentFreeCellsInRow = function (position, minWordLength, puzzle) {
+		return availableCells;
 		
 	};
 
 	console.log(fillPuzzle(wordList));
 	console.log("Now the available Columns are:");
-		console.log(availableColumns);
+	console.log(availableColumns);
+	console.log("Now the available Rows are:");
+	console.log(availableRows);
 	
 	
 	//positioningPosition
