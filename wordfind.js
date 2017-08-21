@@ -5,8 +5,8 @@
 	const PUZZLE_HEIGHT = 10;
 	const PUZZLE_WIDTH = 10
 
-	var words = 'cows tracks arrived located sir seat division effect underline view annual anniversary centennial ' +
-				'millennium perennial artisan apprentice meteorologist blizzard tornado intensify speed count';
+	var words = 'cows tracks arrived sir seat effect view annual ' +
+				'millennium artisan apprentice speed count';
 
 	// get rid of words with more than 10 characters
 	var wordList = words.split(/[ ]+/).filter(function (str) {
@@ -20,14 +20,15 @@
 		return b.length - a.length;
 	});
 
-	var minWordLength = wordList[wordList.length -1].length;
+	var minWord = wordList[wordList.length -1];
 	var letters = 'abcdefghijklmnopqrstuvwuxyz';
 
 	var availableRows = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 	var availableColumns = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-	var fillPuzzle = function  (wordList) {
+	var fillPuzzle = function (wordList) {
 		var puzzle = [], i, j, len;
+		console.log(wordList);
 
 	  	for (i = 0; i < PUZZLE_HEIGHT; i++) {
 	    	puzzle.push([]);
@@ -38,64 +39,69 @@
 
 	  	for (i = 0, len = wordList.length; i < len; i++) {
 	  		placeWordInPuzzle(puzzle, wordList[i]);
+	  		console.log("------------------------");
+			console.log(puzzle);
 	  	}
 	  	return puzzle;
 	};
 
-	var placeWordInPuzzle = function  (puzzle, word) {
+	var placeWordInPuzzle = function (puzzle, word) {
 
 		var placementRange = availableRows.length + availableColumns.length;
 
 		// returns a number from 0 to 19
 		var tempPosition = Math.floor(Math.random() * placementRange)
 		
-		
-
 		if (tempPosition >= availableRows.length) {
 			var columnIndex = availableColumns[tempPosition - availableRows.length]
-			fillVertically(columnIndex, puzzle, word);
+			fillVertically(puzzle, columnIndex, word);
+			
 		}
 		else {
 			var rowIndex = availableRows[tempPosition];
-			//fillHorizontally(rowIndex, puzzle, word);
+			fillHorizontally(puzzle, rowIndex, word);
 		}
 	};
 
-	var fillVertically = function (columnIndex, puzzle, word) {
+	var fillVertically = function (puzzle, columnIndex, word) {
 		var wordLen = word.length;
 		var rowIndex = Math.floor(Math.random() * (10 - wordLen + 1));
 
 		console.log("--------");
-		console.log("word lenngth:");
-		console.log(word.length);
-		console.log(word);
-		console.log("row index:");
-		console.log(rowIndex);
-		console.log("column index:");
-		console.log(columnIndex);
-
-		if(checkColumnAvailability(columnIndex, word, puzzle)) {
+		console.log("word: " + word + " (" + wordLen + ")");
+		console.log("position: " + rowIndex + "," + columnIndex);
+		
+		if(wordFitsInColumn(puzzle, rowIndex, columnIndex, word)) {
+			console.log("Fill VERTical");
+			
 			for (var i = 0; i < wordLen; i++, rowIndex++) {
 				puzzle[rowIndex][columnIndex] = word[i];
+				
 			}
-			scanAvailableColumns(columnIndex, wordLen, puzzle);
+			scanAvailableColumns(puzzle, rowIndex, columnIndex, minWord);
+			//scanAvailableRows(puzzle, columnIndex, minWord);
 		}
 		else {
-			console.log("OOOPs!");
+			console.log("OOOPs VERTical!");
 			placeWordInPuzzle(puzzle,word);
 		}
-		
 	};
 
-	var fillHorizontally = function (rowIndex, puzzle, word) {
+	var fillHorizontally = function (puzzle, rowIndex, word) {
 		var wordLen = word.length;
 		var columnIndex = Math.floor(Math.random() * (10 - wordLen + 1));
 
-		if (checkRowAvailability(columnIndex, word, puzzle)) {
+		console.log("--------");
+		console.log("word: " + word + " (" + wordLen + ")");
+		console.log("position: " + rowIndex + "," + columnIndex);
+
+		if (wordFitsInRow(puzzle, rowIndex, columnIndex, word)) {
+			console.log("Fill HORIZONTAL");
+			
 			for (var i = 0; i < wordLen; i++, columnIndex++) {
 				puzzle[rowIndex][columnIndex] = word[i];
 			}
-			scanAvailableRows(rowIndex, wordLen, puzzle);
+			scanAvailableRows(puzzle, rowIndex, columnIndex, minWord);
 		}
 		else {
 			console.log("OOPS HORIZONTAL!");
@@ -103,86 +109,107 @@
 		}
 	};
 
-	var checkColumnAvailability = function (position, word, puzzle) {
+	var wordFitsInColumn = function (puzzle, rowIndex, columnIndex, word) {
 		var wordLen = word.length;
-		var numberOfAvailableCells = findNumberOfAvailableCellsInColumn(position, word, puzzle);
 		
-		if (numberOfAvailableCells < wordLen) {
-			return false;
+		for (var i = rowIndex; i < rowIndex + wordLen; i++) {
+			console.log(puzzle[i][columnIndex] + '==' + word[i - rowIndex] + " ?");
+			if (puzzle[i][columnIndex] == ' ') {
+				continue;
+			} else if (puzzle[i][columnIndex] != word[i - rowIndex]) {
+				return false;
+			}
+			else {
+				return false;
+			}
 		}
 		return true;
 	};
 
-	var checkRowAvailability = function (position, word, puzzle) {
+	var wordFitsInRow = function (puzzle, rowIndex, columnIndex, word) {
 		var wordLen = word.length;
-		var numberOfAvailableCells = findnumberOfAvailableCellsInRow(position, word, puzzle);
 		
-		if (numberOfAvailableCells < wordLen) {
-			return false;
+		for (var i = columnIndex; i < columnIndex + wordLen; i++) {
+			console.log(puzzle[rowIndex][i] + '==' + word[i - columnIndex] + " ?");
+			if (puzzle[rowIndex][i] == ' ') {
+				continue;
+			} else if (puzzle[rowIndex][i] != word[i - columnIndex]) {
+				console.log("FALSE!!");
+				return false;
+			}
+			else {
+				return false;
+			}
 		}
 		return true;
 	};
 
-	var scanAvailableColumns = function (position, wordLen, puzzle) {
-		var numberOfAvailableCells = findNumberOfAvailableCellsInColumn(position, minWordLength, puzzle);
-		if (numberOfAvailableCells < minWordLength) {
-			availableColumns.splice(availableColumns.indexOf(position), 1);
+	var scanAvailableColumns = function (puzzle, rowIndex, columnIndex, minWord) {
+		var minWordLength = minWord.length;
+		var numberOfAdjacentAvailableCells = findnumberOfAdjacentAvailableCellsInColumn(puzzle, rowIndex, columnIndex, minWord);
+		if (numberOfAdjacentAvailableCells < minWordLength) {
+			availableColumns.splice(availableColumns.indexOf(columnIndex), 1);
 		}
 	};
 
-	var scanAvailableRows = function (position, wordLen, puzzle) {
-		var numberOfAvailableCells = findnumberOfAvailableCellsInRow(position, minWordLength, puzzle);
-		if (numberOfAvailableCells < minWordLength) {
-			availableRows.splice(availableRows.indexOf(position), 1);
+	var scanAvailableRows = function (puzzle, rowIndex, columnIndex, minWord) {
+		var minWordLength = minWord.length;
+		var numberOfAdjacentAvailableCells = findnumberOfAdjacentAvailableCellsInRow(puzzle, rowIndex, columnIndex, minWord);
+		if (numberOfAdjacentAvailableCells < minWordLength) {
+			availableRows.splice(availableRows.indexOf(rowIndex), 1);
 		}
 	};
 	
 
-	var findNumberOfAvailableCellsInColumn = function (position, word, puzzle) {
-		var availableCells = [0,0];
+	var findnumberOfAdjacentAvailableCellsInColumn = function (puzzle, rowIndex, columnIndex, word) {
+		var adjacentAvailableCells = [0, 0];
+		var wordIndex = 0;
 		var wordLen = word.length;
-		console.log("word is: " + word);
 
 		for (var i = 0; i < PUZZLE_HEIGHT; i++) {
-			if (puzzle[i][position] == ' ') {
-				availableCells[0]++;
+			//console.log((puzzle[i][columnIndex] + " == " + word[wordIndex] + "?"));
+			if (puzzle[i][columnIndex] == ' ' ) {
+				adjacentAvailableCells[0]++;
 			}
-			else if (availableCells[1] < availableCells[0]) {
-				availableCells[1] = availableCells[0];
-				availableCells[0] = 0;
+			else if (adjacentAvailableCells[1] < adjacentAvailableCells[0]) {
+				adjacentAvailableCells[1] = adjacentAvailableCells[0];
+				adjacentAvailableCells[0] = 0;
+				wordIndex = 0;
 			}
 			else {
-				availableCells[0] = 0;
+				adjacentAvailableCells[0] = 0;
+				wordIndex++;
 			}
-			//console.log(puzzle[i][position] + " == " + word[availableCells] + "?");
 		}
-		console.log("adjacent Free Cells in column: " + position + " is " + availableCells);
+		console.log("adjacent Free Cells in column: " + columnIndex + " is " + adjacentAvailableCells);
 
-		return Math.max.apply(null, availableCells);
+		return Math.max.apply(null, adjacentAvailableCells);
 	};
 
-	var findnumberOfAvailableCellsInRow = function (position, word, puzzle) {
-		var availableCells = 0;
+	var findnumberOfAdjacentAvailableCellsInRow = function (puzzle, rowIndex, columnIndex, word) {
+		var adjacentAvailableCells = [0, 0];
+		var wordIndex = 0;
 		var wordLen = word.length;
 
 		for (var i = 0; i < PUZZLE_WIDTH; i++) {
-			if (availableCells >= wordLen) {
-				availableCells++;
+			if (puzzle[rowIndex][i] == ' ') {
+				adjacentAvailableCells[0]++;
 			}
-			else if (puzzle[position][i] == ' ' || puzzle[i][position] == word[availableCells]) {
-				availableCells++;
+			else if (adjacentAvailableCells[1] < adjacentAvailableCells[0]) {
+				adjacentAvailableCells[1] = adjacentAvailableCells[0];
+				adjacentAvailableCells[0] = 0;
+				wordIndex = 0;
 			}
 			else {
-				availableCells = 0;
+				adjacentAvailableCells[0] = 0;
+				wordIndex++;
 			}
 		}
-		console.log("adjacent Free Cells in column: " + position + " is " + availableCells + " i: " + i);
-
-		return availableCells;
-		
+		console.log("adjacent Free Cells in row: " + rowIndex + " is " + adjacentAvailableCells);
+		return Math.max.apply(null, adjacentAvailableCells);
 	};
 
-	console.log(fillPuzzle(wordList));
+	fillPuzzle(wordList);
 	console.log("Now the available Columns are:");
 	console.log(availableColumns);
 	console.log("Now the available Rows are:");
