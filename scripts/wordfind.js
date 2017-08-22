@@ -45,6 +45,20 @@
 	  	return puzzle;
 	};
 
+	
+	var fillBlanks = function (puzzle) {
+		for (var i = 0; i < PUZZLE_HEIGHT; i++) {
+	    	var row = puzzle[i];
+	    	for (var j = 0; j < PUZZLE_WIDTH; j++) {
+	      		if (!puzzle[i][j]) {
+	        		var randomLetter = Math.floor(Math.random() * letters.length);
+	        		puzzle[i][j] = letters[randomLetter];
+	      		}
+	    	}
+	  	}
+	};
+
+	
 	var placeWordInPuzzle = function (puzzle, word) {
 
 		var placementRange = availableRows.length + availableColumns.length;
