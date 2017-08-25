@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="wordSearchGameApp">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head
+       content must come *after* these tags -->
+  <title>Word Search Game</title>
+
+  <link href="../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../bower_components/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet">
+  <link href="../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="styles/style.css">
+</head>
+
+<body>
+  <div class="container" ng-controller="puzzleController as puzzleCtrl">
+    <h1>Word Search Game</h1>
+    <div class="row">
+      <form ng-submit="submit()" class="form-horizontal" role="form">
+        <div class="form-group">
+          <label for="text" class="col-sm-2 control-label">Words:</label>
+          <div class="col-sm-10">
+            <textarea ng-model="text" class="form-control" id="text" name="text" rows="5"
+                      placeholder="Type the words here (separated by spaces, please).">
+            </textarea>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <input type="submit" id="submit" value="Submit" class="btn btn-primary"/>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="row">
+      
+      <div id="puzzle"class="col-xs-12 col-sm-12 col-md-8 col-lg-6">
+        <table>
+          <tr ng-repeat="row in puzzle track by $index">
+            <td class="puzzleSquare" ng-repeat="elem in row track by $index">{{elem}}</td>
+          </tr>
+        </table>
+      </div>
+      <div id="words" class="col-xs-12 col-sm-12 col-md-4 col-lg-6">
+      </div>
+      
+    </div>
+  </div>
+  <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="../bower_components/angular/angular.min.js"></script>
+  <script src="scripts/app.js"></script>
+  <script src="scripts/service.js"></script>
+</body>
+</html>

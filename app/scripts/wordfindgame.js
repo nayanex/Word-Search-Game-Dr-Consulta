@@ -11,7 +11,7 @@
 
 			drawPuzzle (puzzleEl, puzzle);
 			drawWords (wordsEl, wordList);
-
+/*
 			if (window.navigator).msPointerEnabled {
 				$(.'puzzleSquare').on('MSPointerDown', startTurn);
 				$('.puzzleSquare').on('MSPointerOver', select);
@@ -25,7 +25,7 @@
 				$('.puzzleSquare').on("touchmove", touchMove);
 				$('.puzzleSquare').on("touchend", endTurn);
 			}
-
+*/
 			return puzzle;
 		};
 
