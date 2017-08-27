@@ -82,11 +82,10 @@ angular.module('wordSearchGameApp')
 
       words.push(words[0].split('').reverse().join(''));
 
-      console.log("words");
-      
-      console.log(this.wordList);
-
       this.solved = true;
+
+      console.log("THISSSSSSSSSS");
+      console.log(this);
 
       angular.forEach(this.wordList, function(word) {
         if (word.found) { return; };

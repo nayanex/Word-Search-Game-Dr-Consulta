@@ -25,20 +25,6 @@ p {
   font: 1em sans-serif;
 }
 
-#puzzle .selected {
-  background-color: orange;
-}
-
-/* indicates that the square is part of a word that has been found */ 
-#puzzle .found {
-  background-color: blue;
-  color: white;
-}
-
-#puzzle .puzzle-solved td{
-  background-color: green;
-}
-
 #puzzle td span{
   user-select: none;
   cursor: pointer;
@@ -49,11 +35,16 @@ p {
   text-align: center;
 }
 
-#puzzle .puzzle-found {
-    background-color: #eee;
+#puzzle .puzzle-solved {
+  background-color: green;
 }
+
 #puzzle .puzzle-selected {
     background-color: #f5f5f5;
+}
+
+#puzzle .puzzle-found {
+    background-color: #eee;
 }
 
 #words {

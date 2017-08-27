@@ -43,6 +43,15 @@ app.controller('puzzleController', ['$scope', 'wordSearchPuzzle', function($scop
     selectFrom = null;
     $scope.puzzle.lookup($scope.selected);
     $scope.selected = [];
-  }
+  };
+
+  $scope.$watch('selected', function(newItems, oldItems) {
+    angular.forEach(oldItems, function(item) {
+      item.selected = false;
+    });
+    angular.forEach(newItems, function(item) {
+      item.selected = true;
+    });
+  });
 }]);
 
