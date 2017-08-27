@@ -9,13 +9,19 @@ angular.module('wordSearchGameApp')
   var availableRows = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 	var availableColumns = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 	
-	function WordSearchPuzzle (wordList) {
+	function WordSearchPuzzle (words) {
 
     this.solved = false;
-    this.wordList = wordList;
+    this.wordList = [];
     this.matrix = [];
-    minWord = wordList[wordList.length -1];
+    minWord = words[words.length -1];
     var i, j, len;
+
+    for (i = 0; i < words.length; i++) {
+      this.wordList.push({
+        name: words[i]
+      });
+    }
 
 	  for (i = 0; i < MATRIX_HEIGHT; i++) {
 	    this.matrix.push([]);
@@ -24,8 +30,8 @@ angular.module('wordSearchGameApp')
 	    }
 	 	}
 
-	  for (i = 0, len = wordList.length; i < len; i++) {
-	   	this.matrix = placeWordInPuzzle(this.matrix, wordList[i]);
+	  for (i = 0, len = this.wordList.length; i < len; i++) {
+	   	this.matrix = placeWordInPuzzle(this.matrix, this.wordList[i].name);
 	  }
 	  this.matrix = fillBlanks(this.matrix);
 
@@ -67,23 +73,22 @@ angular.module('wordSearchGameApp')
     };
 
     this.lookup = function (items) {
-      console.log("I AM LOOKING UP DUDE!");
-      console.log(items);
       if (!items.length) { return; }
-      var words = [];
+      var words = [''];
 
       angular.forEach(items, function(item){
         words[0] += item.letter;
       });
 
-      console.log("words");
-      console.log(words);
-
       words.push(words[0].split('').reverse().join(''));
+
+      console.log("words");
+      
+      console.log(this.wordList);
 
       this.solved = true;
 
-      angular.forEach(this.words, function(word) {
+      angular.forEach(this.wordList, function(word) {
         if (word.found) { return; };
         angular.forEach (words, function (itemWord) {
           if (word.name === itemWord) {
@@ -287,8 +292,8 @@ angular.module('wordSearchGameApp')
    	return Math.max.apply(null, adjacentAvailableCells);
   };
 
-  return function(wordList) {
-    return new WordSearchPuzzle(wordList);
+  return function(words) {
+    return new WordSearchPuzzle(words);
   };
    
 }]);
