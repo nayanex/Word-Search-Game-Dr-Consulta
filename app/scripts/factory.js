@@ -1,8 +1,8 @@
 angular.module('wordSearchGameApp')
   .factory('wordSearchPuzzle', [ function() {
 
-	const BOARD_HEIGHT = 10;
-  const BOARD_WIDTH = 10
+	const MATRIX_HEIGHT = 10;
+  const MATRIX_WIDTH = 10
   const LETTERS = 'abcdefghijklmnopqrstuvwxyz';
 
 	var minword; 
@@ -17,9 +17,9 @@ angular.module('wordSearchGameApp')
     minWord = wordList[wordList.length -1];
     var i, j, len;
 
-	  for (i = 0; i < BOARD_HEIGHT; i++) {
+	  for (i = 0; i < MATRIX_HEIGHT; i++) {
 	    this.matrix.push([]);
-	    for (j = 0; j < BOARD_WIDTH; j++) {
+	    for (j = 0; j < MATRIX_WIDTH; j++) {
 	    	this.matrix[i].push(' ');
 	    }
 	 	}
@@ -28,60 +28,93 @@ angular.module('wordSearchGameApp')
 	   	this.matrix = placeWordInPuzzle(this.matrix, wordList[i]);
 	  }
 	  this.matrix = fillBlanks(this.matrix);
+
+    this.getItem = function (row, col) {
+      return (this.matrix[row] ? this.matrix[row][col]:undefined);
+    };
+
+    this.getItems = function (rowFrom, colFrom, rowTo, colTo) {
+      var items = [];
+      var maxRow = MATRIX_WIDTH - 1;
+      var maxCol = MATRIX_HEIGHT - 1;
+
+      if (rowTo > maxRow) {
+        rowTo = maxRow;
+      }
+      if (colTo > maxCol) {
+        colTo = maxCol;
+      }
+
+      if (this.getItem(colTo, rowTo) === undefined) {
+        return items;
+      }
+
+      if (colFrom === colTo || rowFrom === rowTo) {
+        var shiftX = (colFrom === colTo ? 0 : (colTo > colFrom ? 1 : -1)),
+            shiftY = (rowFrom === rowTo ? 0 : (rowTo > rowFrom ? 1 : -1)),
+            col = colFrom,
+            row = rowFrom;
+
+        items.push(this.getItem(row, col));
+
+        do {
+          col += shiftX;
+          row += shiftY;
+          items.push(this.getItem(row, col));
+        } while (col !== colTo || row !== rowTo);
+      }
+      return items;
+    };
+
+    this.lookup = function (items) {
+      console.log("I AM LOOKING UP DUDE!");
+      console.log(items);
+      if (!items.length) { return; }
+      var words = [];
+
+      angular.forEach(items, function(item){
+        words[0] += item.letter;
+      });
+
+      console.log("words");
+      console.log(words);
+
+      words.push(words[0].split('').reverse().join(''));
+
+      this.solved = true;
+
+      angular.forEach(this.words, function(word) {
+        if (word.found) { return; };
+        angular.forEach (words, function (itemWord) {
+          if (word.name === itemWord) {
+            word.found = true;
+            angular.forEach (items, function(item) {
+              item.found = true;
+            });
+          }
+        });
+        if (!word.found) {
+          this.solved = false;
+        }
+      }, this);
+    }
   };
 
   var fillBlanks = function (matrix) {
-    for (var rowIndex = 0; rowIndex < BOARD_HEIGHT; rowIndex++) {
-      for (var columnIndex = 0; columnIndex < BOARD_WIDTH; columnIndex++) {
+    for (var rowIndex = 0; rowIndex < MATRIX_HEIGHT; rowIndex++) {
+      for (var columnIndex = 0; columnIndex < MATRIX_WIDTH; columnIndex++) {
         if (matrix[rowIndex][columnIndex] == ' ') {
           var randomLetter = Math.floor(Math.random() * LETTERS.length);
           var item = {
             letter: LETTERS[randomLetter],
+            row: rowIndex,
             col: columnIndex,
-            row: rowIndex
           };
           matrix[rowIndex][columnIndex] = item;
         }
       }
     }
     return matrix;
-  };
-
-  var getItem = function (matrix, row, col) {
-    return (matrix[row] ? matrix[row][cow]:undefined);
-  };
-
-  var getItems = function (matrix, rowFrom, colFrom, rowTo, colTo) {
-    var items = [];
-    var maxRow = BOARD_WIDTH - 1;
-    var maxCol = BOARD_HEIGHT - 1;
-
-    if (rowTo > maxRow) {
-      rowTo = maxRow;
-    }
-    if (colTo > maxCol) {
-      colTo = maxCol;
-    }
-
-    if (getItem(colTo, rowTo) === undefined) {
-      return items;
-    }
-
-    if (colFrom === colTo || rowFrom === rowTo) {
-      var shiftX = (colFrom === colTo ? 0 : (colTo > colFrom ? 1 : -1)),
-          shiftY = (rowFrom === rowTo ? 0 : (rowTo > rowFrom ? 1 : -1)),
-          col = colFrom,
-          row = rowFrom;
-
-      items.push(getItem(matrix, row, col));
-
-      do {
-        col += shiftX;
-        row += shiftY;
-        items.push(getItem(matrix, row, col));
-      } while (col !== colTo || row !== rowTo);
-    }
-    return items;
   };
 
   var placeWordInPuzzle = function (matrix, word) {
@@ -113,8 +146,8 @@ angular.module('wordSearchGameApp')
  			for (var i = 0; i < wordLen; i++, rowIndex++) {
         var item = {
           letter: word[i],
-          col: columnIndex,
-          row: rowIndex
+          row: rowIndex,
+          col: columnIndex
         };
  				matrix[rowIndex][columnIndex] = item;
  			}
@@ -141,8 +174,8 @@ angular.module('wordSearchGameApp')
    		for (var i = 0; i < wordLen; i++, columnIndex++) {
         var item = {
           letter: word[i],
-          col: columnIndex,
-          row: rowIndex
+          row: rowIndex,
+          col: columnIndex
         };
    			matrix[rowIndex][columnIndex] = item;
    		}
@@ -210,7 +243,7 @@ angular.module('wordSearchGameApp')
    	var wordIndex = 0;
    	var wordLen = word.length;
 
-   	for (var i = 0; i < BOARD_HEIGHT; i++) {
+   	for (var i = 0; i < MATRIX_HEIGHT; i++) {
    		//console.log((matrix[i][columnIndex] + " == " + word[wordIndex] + "?"));
    		if (matrix[i][columnIndex] == ' ' ) {
    			adjacentAvailableCells[0]++;
@@ -235,7 +268,7 @@ angular.module('wordSearchGameApp')
    	var wordIndex = 0;
    	var wordLen = word.length;
 
-   	for (var i = 0; i < BOARD_WIDTH; i++) {
+   	for (var i = 0; i < MATRIX_WIDTH; i++) {
   		if (matrix
         [rowIndex][i] == ' ') {
    			adjacentAvailableCells[0]++;

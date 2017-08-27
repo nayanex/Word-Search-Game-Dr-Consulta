@@ -24,23 +24,24 @@ app.controller('puzzleController', ['$scope', 'wordSearchPuzzle', function($scop
       });
     }
     $scope.puzzle = wordSearchPuzzle(wordList);
-    console.log($scope.puzzle);
+    //console.log($scope.puzzle);
   };
 
   $scope.selectStart = function (item) {
     selectFrom = item;
-    console.log("selectFrom" + selectFrom);
+    console.log("selectFrom") 
+    console.log(selectFrom);
   };
 
   $scope.selectEnter = function (item) {
     if(selectFrom) {
-      $scope.selected = $scope.puzzle.getItems(selectFrom.col, selectFrom.row, item.col, item.row);
+      $scope.selected = $scope.puzzle.getItems(selectFrom.row, selectFrom.col, item.row, item.col);
     }
   };
 
   $scope.selectEnd = function () {
     selectFrom = null;
-    scope.puzzle.lookup($scope.selected);
+    $scope.puzzle.lookup($scope.selected);
     $scope.selected = [];
   }
 }]);

@@ -38,10 +38,6 @@ O teste consiste em criar uma jogo de "Caça palavras" em HTML a partir palavras
  
 # Solution by the developer
 
-## How to test the script to fill the words in puzzle
+You are going to find a result similar to the one below:
 
-Go to the "Script" folder and run "node wordfind.js"
-
-You are going to have a result similar to the one below:
-
-![Filling words in puzzle](images/fillingWordsInPuzzle.png?raw=true "Filling words in puzzle")
+![Filling words in puzzle](app/images/fillingWordsInPuzzle.png?raw=true "Filling words in puzzle")
