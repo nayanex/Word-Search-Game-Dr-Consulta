@@ -37,17 +37,24 @@
     </div>
 
     <div class="row">
-      
-      <div id="puzzle"class="col-xs-12 col-sm-12 col-md-8 col-lg-6">
-        <table>
-          <tr ng-repeat="row in puzzle track by $index">
-            <td class="puzzleSquare" ng-repeat="elem in row track by $index">{{elem}}</td>
+      <div class="col-xs-12 col-sm-12 col-md-8 col-lg-6">
+        <table id="puzzle" ng-class="{'puzzle-solved': puzzle.solved}">
+          <tr ng-repeat="row in puzzle.matrix track by $index">
+            <td class="puzzleSquare" ng-repeat="item in row track by $index" 
+                ng-class="{'puzzle-found':item.found, 'puzzle-selected':item.selected}"
+                ng-mousedown="selectStart(item)" ng-mouseup="selectEnd()" ng-mouseenter="selectEnter(item)">
+                {{item.letter}}
+            </td>
           </tr>
         </table>
       </div>
       <div id="words" class="col-xs-12 col-sm-12 col-md-4 col-lg-6">
+        <ul>
+          <li ng-repeat="word in puzzle.words" ng-class="{'found': word.found}">
+            {{word}}
+          </li>
+        </ul>
       </div>
-      
     </div>
   </div>
   <script src="../bower_components/jquery/dist/jquery.min.js"></script>

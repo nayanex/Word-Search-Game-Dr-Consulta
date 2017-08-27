@@ -1,9 +1,11 @@
 var app = angular.module('wordSearchGameApp', []);
 
-app.controller('puzzleController', ['$scope', 'createGameService', function($scope, createGameService) {
+app.controller('puzzleController', ['$scope', 'wordSearchPuzzle', function($scope, wordSearchPuzzle) {
   var wordList;
+  var selectFrom;
   $scope.text = '';
-  $scope.puzzle=[];
+  $scope.puzzle= [];
+  $scope.selected = [];
 
   $scope.submit = function() {
     if($scope.text) {
@@ -21,8 +23,25 @@ app.controller('puzzleController', ['$scope', 'createGameService', function($sco
         return b.length - a.length;
       });
     }
-    $scope.puzzle = createGameService.fillPuzzle(wordList);
+    $scope.puzzle = wordSearchPuzzle(wordList);
     console.log($scope.puzzle);
   };
+
+  $scope.selectStart = function (item) {
+    selectFrom = item;
+    console.log("selectFrom" + selectFrom);
+  };
+
+  $scope.selectEnter = function (item) {
+    if(selectFrom) {
+      $scope.selected = $scope.puzzle.getItems(selectFrom.col, selectFrom.row, item.col, item.row);
+    }
+  };
+
+  $scope.selectEnd = function () {
+    selectFrom = null;
+    scope.puzzle.lookup($scope.selected);
+    $scope.selected = [];
+  }
 }]);
 
