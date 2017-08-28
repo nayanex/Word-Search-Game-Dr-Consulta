@@ -24,13 +24,10 @@ app.controller('puzzleController', ['$scope', 'wordSearchPuzzle', function($scop
       });
     }
     $scope.puzzle = wordSearchPuzzle(wordList);
-    //console.log($scope.puzzle);
   };
 
   $scope.selectStart = function (item) {
     selectFrom = item;
-    console.log("selectFrom") 
-    console.log(selectFrom);
   };
 
   $scope.selectEnter = function (item) {
@@ -43,6 +40,8 @@ app.controller('puzzleController', ['$scope', 'wordSearchPuzzle', function($scop
     selectFrom = null;
     $scope.puzzle.lookup($scope.selected);
     $scope.selected = [];
+    console.log("STATE OF PUZZLE NOW");
+    console.log($scope.puzzle);
   };
 
   $scope.$watch('selected', function(newItems, oldItems) {
